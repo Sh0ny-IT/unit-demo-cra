@@ -20,8 +20,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Checkout run-tests.yml
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          path: .github/workflows
+
       - name: Run tests
-        uses: ./path/to/run-tests.yml
+        run: npm run test-ci
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-report
+          path: path/to/test-report
 
   build:
     name: Create Release
