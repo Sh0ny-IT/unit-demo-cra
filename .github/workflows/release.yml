@@ -84,21 +84,21 @@ jobs:
 
 
   create-release-tag:
+    needs: run-tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: 'Release ${{ github.run_number }}'
-          draft: false
-          prerelease: false
+      - name: Configure Git Identity
+        run: |
+          git config user.email "you@example.com"
+          git config user.name "Your Name"
+
+      - name: Create Release Tag
+        run: |
+          git tag -a v${{ github.run_number }} -m "Release ${{ github.run_number }}"
+          git push origin --tags
 
   build:
     needs: create-release-tag
@@ -117,13 +117,3 @@ jobs:
           release_name: 'Release ${{ github.run_number }}'
           draft: false
           prerelease: false
-
-      - name: Deploy to gh-pages
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: ./dist # The folder the action should deploy.
-          CLEAN: true # Automatically remove old files from the deployment branch
-          COMMIT_MESSAGE: 'Deploying to gh-pages from build job'
-
