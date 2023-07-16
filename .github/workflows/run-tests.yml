@@ -1,6 +1,6 @@
 name: Run tests
 
-on: [pull_request,worflow_dispatch,worflow_call]
+on: [pull_request,workflow_dispatch,workflow_call]
 
 jobs:
   check-lint: # This job will run the linting checks
