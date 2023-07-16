@@ -1,0 +1,51 @@
+name: Run tests
+
+on: [pull_request,worflow_dispatch,worflow_call]
+
+jobs:
+  check-lint: # This job will run the linting checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Linting
+        run: npm run lint
+    check-unit-tests: # This job will run the unit tests
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Setup Node.js
+          uses: actions/setup-node@v3
+        - name: Install dependencies
+          run: npm ci
+        - name: Unit tests
+          run: npm run test-ci |& tee test-report.txt
+        - name: Upload test report
+          uses: actions/upload-artifact@v3
+          if: always()
+          with:
+            name: test-report
+            path: test-report.html
+
+    check-e2e-tests: # This job will run the e2e tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+            - name: Install dependencies
+              run: npm ci
+            - name: Install playwright dependencies
+              run: npx playwright install --with-deps
+            - name: Install xvfb
+              run: sudo apt-get install xvfb -y
+            - name: E2E tests
+              run: xvfb-run npx playwright test
+            - uses: actions/upload-artifact@v3
+              if: always()
+              with:
+                name: e2e-report
+                path: playwright-report.html
