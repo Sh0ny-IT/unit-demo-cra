@@ -1,5 +1,5 @@
 ---
-title: RELEASE {{ env.GITHUB_REF_NAME }}
+title: RELEASE {{ env.GITHUB_REF_NAME#refs/tags/ }}
 labels: release
 ---
 
