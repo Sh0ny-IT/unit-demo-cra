@@ -55,19 +55,31 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Prepare issue content
+        id: prepare_issue_content
         run: |
           echo "Test report is available as an artifact in this workflow run." > test_report_link.txt
 
-      - name: Create or update release issue
+      - name: Create Release Issue
         id: create-release-issue
-        uses: JasonEtco/create-an-issue@v2.9.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/github-script@v6
         with:
-          update_existing: true
-          search_existing: all
-          assignees: ${{ github.actor }}
-          filename: .github/issue_template.md
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const testReport = '${{ steps.prepare_issue_content.outputs.report }}';
+            const title = `Test Report for Release ${process.env.GITHUB_RUN_NUMBER}`
+            let body = '';
+            body += `Author: ${context.payload.sender.login}\n`
+            body += `Date: ${new Date().toLocaleString()}\n`
+            body += `Version: ${process.env.GITHUB_RUN_NUMBER}\n\n`
+            body += `Test Report: ${testReport}\n`
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              assignees: [context.payload.sender.login],
+              labels: ['test', 'report']
+            })
 
       - name: Write issue id in file
         id: write-issue-id
