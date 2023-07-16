@@ -1,0 +1,31 @@
+name: Create Issue from Template
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-issue-from-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Prepare issue content
+        run: |
+          ISSUE_TEMPLATE=$(cat .github/issue_template.md)
+          TEST_REPORT_LINK="Test report is available as an artifact in this workflow run."
+          ISSUE_CONTENT="$ISSUE_TEMPLATE\n\n$TEST_REPORT_LINK"
+          echo "$ISSUE_CONTENT" > issue_content.md
+
+      - name: Create or update release issue
+        id: create-release-issue
+        uses: JasonEtco/create-an-issue@v2.9.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          update_existing: true
+          search_existing: all
+          assignees: ${{ github.actor }}
+          filename: issue_content.md
