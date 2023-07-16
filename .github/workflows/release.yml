@@ -1,9 +1,9 @@
 name: Create Release
 
 on:
-    push:
-        tags:
-          - 'v[0-9]+'
+  push:
+    branches:
+      - master
 
 jobs:
   run-tests:
