@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Parse git_log
         id: parse_git_log
         run: |
@@ -38,6 +40,10 @@ jobs:
           DATE: ${{ steps.parse_git_log.outputs.date }}
         with:
           filename: .github/issue_template.md
+          title: ${{ needs.run-tests.outputs.version }}
+          labels: release
+          assignees: ${{ steps.parse_git_log.outputs.author }}
+          body: ${{ steps.parse_git_log.outputs.body }}
       - name: Update info issue
         uses: peter-evans/create-or-update-comment@v3
         with:
@@ -46,9 +52,6 @@ jobs:
             **Version:** ${{ needs.run-tests.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.run-tests.outputs.version }}
-          AUTHOR: ${{ steps.parse_git_log.outputs.author }}
-          DATE: ${{ steps.parse_git_log.outputs.date }}
     outputs:
       issue_number: ${{ steps.create-release-issue.outputs.number }}
       issue_url: ${{ steps.create-release-issue.outputs.url }}
