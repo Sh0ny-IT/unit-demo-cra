@@ -21,9 +21,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run tests
-        uses: actions/run-command@v1
-        with:
-          command: unit-demo-cra/.github/workflows/run-tests.yml
+        run: node unit-demo-cra/.github/workflows/run-tests.yml
 
       - name: Upload test report
         uses: actions/upload-artifact@v2
