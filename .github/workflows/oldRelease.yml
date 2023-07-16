@@ -1,116 +1,116 @@
-name: 2-Create Release Branch and Run Tests
-
-on:
-  push:
-    branches:
-      - master
-
-jobs:
-  run-tests:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: "Run tests: unit"
-        id: unit_test
-        run: npm run test-unit-ci && echo "UNIT_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='FAILED'" >> $GITHUB_ENV
-        continue-on-error: true
-
-      - name: "Run tests: e2e"
-        id: e2e_test
-        run: npm run test-e2e-ci && echo "E2E_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='FAILED'" >> $GITHUB_ENV
-        continue-on-error: true
-
-      - name: Save test report
-        run: |
-          mkdir -p shared-results
-          cp test-report.html shared-results/test-report.html
-
-      - name: Upload test report
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-report
-          path: shared-results/test-report.html
-
-    outputs:
-      unit_test_result: ${{ env.UNIT_TEST_RESULT }}
-      e2e_test_result: ${{ env.E2E_TEST_RESULT }}
-
-  create-release-issue:
-    needs: run-tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Prepare issue content
-        id: prepare_issue_content
-        run: |
-          echo "Test report is available as an artifact in this workflow run." > test_report_link.txt
-
-      - name: Create Release Issue
-        id: create-release-issue
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const testReport = '${{ steps.prepare_issue_content.outputs.report }}';
-            const title = `Test Report for Release ${process.env.GITHUB_RUN_NUMBER}`
-            let body = '';
-            body += `Author: ${context.payload.sender.login}\n`
-            body += `Date: ${new Date().toLocaleString()}\n`
-            body += `Version: ${process.env.GITHUB_RUN_NUMBER}\n\n`
-            body += `Unit tests result: ${{ needs.run-tests.outputs.unit_test_result }}\n`
-            body += `E2E tests result: ${{ needs.run-tests.outputs.e2e_test_result }}\n`
-            body += `Test Report: ${testReport}\n`
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              assignees: [context.payload.sender.login],
-              labels: ['test', 'report']
-            })
-
-      - name: Write issue id in file
-        id: write-issue-id
-        shell: bash
-        run: |
-          echo "${{ steps.create-release-issue.outputs.number }}" > issue_id.txt
-
-      - name: Save release issue id for use in other workflows
-        uses: actions/upload-artifact@v2
-        with:
-          name: issue_id
-          path: issue_id.txt
-
-  create-release-tag:
-    needs: create-release-issue
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: 'Release ${{ github.run_number }}'
-          draft: false
-          prerelease: false
-
-  build-and-deploy:
-    needs: create-release-tag
-    if: ${{ needs.run-tests.outputs.unit_test_result == 'PASSED' && needs.run-tests.outputs.e2e_test_result == 'PASSED' }}
-    uses: ./.github/workflows/static.yml
+#name: 2-Create Release Branch and Run Tests
+#
+#on:
+#  push:
+#    branches:
+#      - master
+#
+#jobs:
+#  run-tests:
+#    name: Run Tests
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v2
+#
+#      - name: Install dependencies
+#        run: npm ci
+#
+#      - name: "Run tests: unit"
+#        id: unit_test
+#        run: npm run test-unit-ci && echo "UNIT_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='FAILED'" >> $GITHUB_ENV
+#        continue-on-error: true
+#
+#      - name: "Run tests: e2e"
+#        id: e2e_test
+#        run: npm run test-e2e-ci && echo "E2E_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='FAILED'" >> $GITHUB_ENV
+#        continue-on-error: true
+#
+#      - name: Save test report
+#        run: |
+#          mkdir -p shared-results
+#          cp test-report.html shared-results/test-report.html
+#
+#      - name: Upload test report
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: test-report
+#          path: shared-results/test-report.html
+#
+#    outputs:
+#      unit_test_result: ${{ env.UNIT_TEST_RESULT }}
+#      e2e_test_result: ${{ env.E2E_TEST_RESULT }}
+#
+#  create-release-issue:
+#    needs: run-tests
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Prepare issue content
+#        id: prepare_issue_content
+#        run: |
+#          echo "Test report is available as an artifact in this workflow run." > test_report_link.txt
+#
+#      - name: Create Release Issue
+#        id: create-release-issue
+#        uses: actions/github-script@v6
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const testReport = '${{ steps.prepare_issue_content.outputs.report }}';
+#            const title = `Test Report for Release ${process.env.GITHUB_RUN_NUMBER}`
+#            let body = '';
+#            body += `Author: ${context.payload.sender.login}\n`
+#            body += `Date: ${new Date().toLocaleString()}\n`
+#            body += `Version: ${process.env.GITHUB_RUN_NUMBER}\n\n`
+#            body += `Unit tests result: ${{ needs.run-tests.outputs.unit_test_result }}\n`
+#            body += `E2E tests result: ${{ needs.run-tests.outputs.e2e_test_result }}\n`
+#            body += `Test Report: ${testReport}\n`
+#            github.rest.issues.create({
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              title: title,
+#              body: body,
+#              assignees: [context.payload.sender.login],
+#              labels: ['test', 'report']
+#            })
+#
+#      - name: Write issue id in file
+#        id: write-issue-id
+#        shell: bash
+#        run: |
+#          echo "${{ steps.create-release-issue.outputs.number }}" > issue_id.txt
+#
+#      - name: Save release issue id for use in other workflows
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: issue_id
+#          path: issue_id.txt
+#
+#  create-release-tag:
+#    needs: create-release-issue
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Create Release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: v${{ github.run_number }}
+#          release_name: 'Release ${{ github.run_number }}'
+#          draft: false
+#          prerelease: false
+#
+#  build-and-deploy:
+#    needs: create-release-tag
+#    if: ${{ needs.run-tests.outputs.unit_test_result == 'PASSED' && needs.run-tests.outputs.e2e_test_result == 'PASSED' }}
+#    uses: ./.github/workflows/static.yml

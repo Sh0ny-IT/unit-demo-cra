@@ -120,3 +120,19 @@ jobs:
           release_name: 'Release ${{ github.run_number }}'
           draft: false
           prerelease: false
+    build:
+      needs: create-release-tag
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Create Release
+          id: create_release
+          uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: v${{ github.run_number }}
+            release_name: 'Release ${{ github.run_number }}'
+            draft: false
