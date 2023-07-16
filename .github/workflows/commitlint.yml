@@ -1,4 +1,4 @@
-name: Lint Commit Messages
+name: 1-Lint Commit Messages
 on: push
 
 jobs:
