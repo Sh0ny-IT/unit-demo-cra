@@ -82,10 +82,10 @@ jobs:
           name: Comment issue with deploy
           uses: peter-evans/create-or-update-comment@v3
           with:
-              issue-number: ${{ needs.release.outputs.issueNumber }}
-              body: |
-                Deploy №${{ needs.release.outputs.issueNumber }}
-                Deployment link: https://sh0ny-it.github.io/unit-demo-cra/
+            issue-number: ${{ needs.release.outputs.issueNumber }}
+            body: |
+              Deploy №${{ needs.release.outputs.issueNumber }}
+              Deployment link: https://sh0ny-it.github.io/unit-demo-cra/
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
