@@ -26,24 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
-        run: npm test
+      - name: Run tests
+        run: npm run test-ci
 
-      - name: Save unit test report
+      - name: Save test report
         run: |
           mkdir -p shared-results
-          cp unit-report shared-results/unit-report.txt
-
-      - name: Install playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run end-to-end tests
-        run: xvfb-run npm run e2e
-
-      - name: Save end-to-end test report
-        run: |
-          mkdir -p shared-results
-          cp playwright-report shared-results/playwright-report.txt
+          cp test-report.html shared-results/test-report.html
 
   create-release-issue:
     runs-on: ubuntu-latest
@@ -51,13 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Pull unit test report to env variable
+      - name: Pull test report to env variable
         shell: bash
-        run: echo "UNIT_TEST_RESULTS=$(cat shared-results/unit-report.txt)" >> $GITHUB_ENV
-
-      - name: Pull end-to-end test report to env variable
-        shell: bash
-        run: echo "E2E_TEST_RESULTS=$(cat shared-results/playwright-report.txt)" >> $GITHUB_ENV
+        run: echo "TEST_REPORT=$(cat shared-results/test-report.html)" >> $GITHUB_ENV
 
       - name: Create or update release issue
         id: create-release-issue
