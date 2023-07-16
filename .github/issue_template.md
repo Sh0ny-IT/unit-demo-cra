@@ -1,5 +1,5 @@
 ---
 title: '[{{ env.VERSION }}] Release'
 labels: RELEASE
-assignees: [{{ env.AUTHOR }}]
+assignees: 'Sh0ny'
 ---
