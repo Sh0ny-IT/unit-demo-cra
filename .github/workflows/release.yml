@@ -22,12 +22,12 @@ jobs:
 
       - name: "Run tests: unit"
         id: unit_test
-        run: npm run test-unit-ci && echo "UNIT_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='FAILED'" >> $GITHUB_ENV
+        run: npm run test-unit-ci && echo "UNIT_TEST_RESULT='✅PASSED'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='⛔️FAILED'" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: "Run tests: e2e"
         id: e2e_test
-        run: npm run test-e2e-ci && echo "E2E_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='FAILED'" >> $GITHUB_ENV
+        run: npm run test-e2e-ci && echo "E2E_TEST_RESULT='✅PASSED'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='⛔️FAILED'" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: Save test report
