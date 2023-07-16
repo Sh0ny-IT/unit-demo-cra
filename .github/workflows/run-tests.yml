@@ -1,6 +1,9 @@
 name: Run tests
 
-on: [pull_request,workflow_dispatch,workflow_call]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   lint: # This job will run the linting checks
