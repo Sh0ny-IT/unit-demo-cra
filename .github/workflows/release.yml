@@ -72,11 +72,20 @@ jobs:
         with:
           node-version: 18
       - name: Install dependencies
-        run: npm ci
-      - name: Build project
-        run: npm run build
+        run: |
+          npm ci
+          PUBLIC_URL="/unit-demo-cra" npm run build
       - name: Upload production-ready build files
-        uses: actions/upload-artifact@v2
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          name: build
-          path: ./build
+          folder: build
+          name: Comment issue with deploy
+          uses: peter-evans/create-or-update-comment@v3
+          with:
+              issue-number: ${{ needs.release.outputs.issueNumber }}
+              body: |
+                Deploy №${{ needs.release.outputs.issueNumber }}
+                Deployment link: https://sh0ny-it.github.io/unit-demo-cra/
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
