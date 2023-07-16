@@ -1,16 +1,9 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Run workflow for deploy to GitHub Pages
 
 on:
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   workflow_call:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -34,8 +27,9 @@ jobs:
         run: npm run build
 
       - name: Upload production-ready build files
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
+          name: build-artifact
           path: ./build
 
   deploy:
@@ -45,10 +39,20 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create ID token
+        id: id_token
+        uses: k15g15/create-actions-id-token@v1
+        with:
+          app_id: ${{ github.actor }}
+
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+        uses: JamesIves/github-pages-deploy-action@4.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ steps.deployment.outputs.id_token_request_url }}
-
+          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ steps.id_token.outputs.id_token_request_url }}
+        with:
+          branch: gh-pages
+          folder: build

@@ -1,4 +1,4 @@
-name: Create Release
+name: create and start c Release
 
 on:
   push:
