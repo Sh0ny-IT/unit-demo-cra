@@ -47,9 +47,9 @@ jobs:
       - name: Update info issue
         uses: peter-evans/create-or-update-comment@v3
         with:
-          issue-number: ${{ steps.create-release-issue.outputs.number }}
-          body: |
-            **Version:** ${{ needs.run-tests.outputs.version }}
+          filename: .github/issue_template.md
+          update_existing: true
+          search_existing: all
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
