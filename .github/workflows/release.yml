@@ -48,8 +48,8 @@ jobs:
         id: create-release-issue
         uses: JasonEtco/create-an-issue@v2.9.1
         env:
-          TAG_NAME: $GITHUB_REF_NAME
-          ACTOR: $GITHUB_ACTOR
+          TAG_NAME: ${{ env.GITHUB_REF_NAME }}
+          ACTOR: ${{ env.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           update_existing: true
@@ -59,12 +59,12 @@ jobs:
         id: write-issue-id
         shell: bash
         run: |
-          echo "${{ steps.create-release-issue.outputs.number }}" > $GIT_REF_NAME.txt
+          echo "${{ steps.create-release-issue.outputs.number }}" > ${{ env.GITHUB_REF_NAME }}.txt
       - name: Save release issue id for use in other workflows
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.ref_name }}
-          path: ${{ github.ref_name }}.txt
+          name: ${{ env.GITHUB_REF_NAME }}
+          path: ${{ env.GITHUB_REF_NAME }}.txt
 
   build:
     name: Create Release
