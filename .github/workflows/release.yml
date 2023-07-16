@@ -1,28 +1,13 @@
 name: 2-Create Release Branch and Run Tests
+
 on:
-  workflow_dispatch:
   push:
     branches:
       - master
 
-
 jobs:
-  create-release-branch:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Create Release Branch
-        uses: peterjgrainger/action-create-branch@v2.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          branch: 'release-${{ github.ref_name }}'
-
   run-tests:
     name: Run Tests
-    needs: create-release-branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,8 +19,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm run test-ci
+      - name: "Run tests: unit"
+        id: unit_test
+        run: npm run test-unit-ci && echo "UNIT_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='FAILED'" >> $GITHUB_ENV
+        continue-on-error: true
+
+      - name: "Run tests: e2e"
+        id: e2e_test
+        run: npm run test-e2e-ci && echo "E2E_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='FAILED'" >> $GITHUB_ENV
+        continue-on-error: true
 
       - name: Save test report
         run: |
@@ -47,6 +39,10 @@ jobs:
         with:
           name: test-report
           path: shared-results/test-report.html
+
+    outputs:
+      unit_test_result: ${{ env.UNIT_TEST_RESULT }}
+      e2e_test_result: ${{ env.E2E_TEST_RESULT }}
 
   create-release-issue:
     needs: run-tests
@@ -72,6 +68,8 @@ jobs:
             body += `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.GITHUB_RUN_NUMBER}\n\n`
+            body += `Unit tests result: ${{ needs.run-tests.outputs.unit_test_result }}\n`
+            body += `E2E tests result: ${{ needs.run-tests.outputs.e2e_test_result }}\n`
             body += `Test Report: ${testReport}\n`
             github.rest.issues.create({
               owner: context.repo.owner,
@@ -114,21 +112,5 @@ jobs:
 
   build-and-deploy:
     needs: create-release-tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build
-        run: |
-          npm ci
-          PUBLIC_URL="/shri-unit-demo-cra" npm run build
-
-      - name: Deploy to gh-pages
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: build
-          clean: true
-          commit-message: 'Deploying to gh-pages from build job'
+    if: ${{ needs.run-tests.outputs.unit_test_result == 'PASSED' && needs.run-tests.outputs.e2e_test_result == 'PASSED' }}
+    uses: ./.github/workflows/static.yml
