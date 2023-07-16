@@ -44,9 +44,9 @@ jobs:
 
       - name: Create ID token
         id: id_token
-        uses: k15g15/create-actions-id-token@v1
+        uses: peter-evans/id-token@v2
         with:
-          app_id: ${{ github.actor }}
+          jwt_duration_seconds: 600
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.0
