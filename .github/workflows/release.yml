@@ -57,11 +57,11 @@ jobs:
         uses: JasonEtco/create-an-issue@v2.9.1
         env:
           TAG_NAME: ${{ env.GITHUB_REF_NAME }}
-          ACTOR: ${{ env.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           update_existing: true
           search_existing: all
+          assignees: ${{ github.actor }}
 
       - name: Write issue id in file
         id: write-issue-id
