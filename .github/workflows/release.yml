@@ -20,8 +20,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Parse git_log
         id: parse_git_log
         run: |
@@ -38,14 +36,8 @@ jobs:
           VERSION: ${{ needs.run-tests.outputs.version }}
           AUTHOR: ${{ steps.parse_git_log.outputs.author }}
           DATE: ${{ steps.parse_git_log.outputs.date }}
-          ISSUE_TEMPLATE: |
-            ---
-            title: '[${{ needs.run-tests.outputs.version }}] Release'
-            labels: RELEASE
-            assignees: ${{ steps.parse_git_log.outputs.author }}
-            ---
         with:
-          filename: ${{ env.ISSUE_TEMPLATE }}
+          filename: .github/issue_template.md
       - name: Update info issue
         uses: peter-evans/create-or-update-comment@v3
         with:
