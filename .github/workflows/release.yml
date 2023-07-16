@@ -2,8 +2,13 @@ name: Create Release Branch and Run Tests
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   create-release-branch:
@@ -52,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Prepare issue content
         run: |
