@@ -1,7 +1,7 @@
 ---
-title: Someone just pushed
-assignees: JasonEtco, matchai
-labels: bug, enhancement
+title: {{ env.GITHUB_REF_NAME }}: {{ env.GITHUB_ACTOR }}: {{ env.TIME_OF_CHANGES }}
+assignees: {{ env.GITHUB_ACTOR }}
+labels: release
 ---
 
 ## Версия проекта, связанная с этой задачей
