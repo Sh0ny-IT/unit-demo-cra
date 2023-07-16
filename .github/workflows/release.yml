@@ -1,6 +1,5 @@
 name: Create Release
 
-
 on:
   push:
     branches:
@@ -39,12 +38,14 @@ jobs:
           VERSION: ${{ needs.run-tests.outputs.version }}
           AUTHOR: ${{ steps.parse_git_log.outputs.author }}
           DATE: ${{ steps.parse_git_log.outputs.date }}
+          ISSUE_TEMPLATE: |
+            ---
+            title: '[${{ needs.run-tests.outputs.version }}] Release'
+            labels: RELEASE
+            assignees: ${{ steps.parse_git_log.outputs.author }}
+            ---
         with:
-          filename: .github/issue_template.md
-          title: ${{ needs.run-tests.outputs.version }}
-          labels: release
-          assignees: ${{ steps.parse_git_log.outputs.author }}
-          body: ${{ steps.parse_git_log.outputs.body }}
+          filename: ${{ env.ISSUE_TEMPLATE }}
       - name: Update info issue
         uses: peter-evans/create-or-update-comment@v3
         with:
