@@ -41,12 +41,24 @@ jobs:
           mkdir -p shared-results
           cp test-report.html shared-results/test-report.html
 
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: shared-results/test-report.html
+
   create-release-issue:
     needs: run-tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Download test report
+        uses: actions/download-artifact@v3
+        with:
+          name: test-report
+          path: shared-results
 
       - name: Pull test report to env variable
         shell: bash
@@ -67,12 +79,14 @@ jobs:
         id: write-issue-id
         shell: bash
         run: |
-          echo "${{ steps.create-release-issue.outputs.number }}" > ${{ env.GITHUB_REF_NAME }}.txt
+          echo "${{ steps.create-release-issue.outputs.number }}" > issue_id.txt
+
       - name: Save release issue id for use in other workflows
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.GITHUB_REF_NAME }}
-          path: ${{ env.GITHUB_REF_NAME }}.txt
+          name: issue_id
+          path: issue_id.txt
+
 
   create-release-tag:
     needs: run-tests
