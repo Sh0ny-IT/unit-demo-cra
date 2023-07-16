@@ -53,6 +53,9 @@ jobs:
             **Version:** ${{ needs.run-tests.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.run-tests.outputs.version }}
+          AUTHOR: ${{ steps.parse_git_log.outputs.author }}
+          DATE: ${{ steps.parse_git_log.outputs.date }}
     outputs:
       issue_number: ${{ steps.create-release-issue.outputs.number }}
       issue_url: ${{ steps.create-release-issue.outputs.url }}
