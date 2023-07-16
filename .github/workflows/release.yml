@@ -81,6 +81,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Configure Git Identity
+        run: |
+          git config user.email "you@example.com"
+          git config user.name "Your Name"
+
       - name: Create Release Tag
         run: |
           git tag -a v${{ github.run_number }} -m "Release ${{ github.run_number }}"
