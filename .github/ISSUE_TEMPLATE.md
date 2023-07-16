@@ -1,5 +1,4 @@
 ---
-title:
-assignees:
-labels:
+title: ${{ env.GITHUB_REF_NAME }}
+labels: release
 ---
