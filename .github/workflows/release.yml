@@ -120,7 +120,7 @@ jobs:
           release_name: 'Release ${{ github.run_number }}'
           draft: false
           prerelease: false
-  build:
+  create-release:
     needs: create-release-tag
     runs-on: ubuntu-latest
     steps:
