@@ -32,7 +32,7 @@ jobs:
       - name: Save test report
         run: |
           mkdir -p shared-results
-          cp test-report.html shared-results/test-report.html
+          cp coverage/lcov-report/index.html shared-results/test-report.html
 
   create-release-issue:
     runs-on: ubuntu-latest
