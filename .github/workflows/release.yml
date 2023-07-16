@@ -1,12 +1,10 @@
 name: Create Release Branch and Run Tests
-
 on: [workflow_dispatch, push]
-
 jobs:
   create-release-branch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Create Release Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
@@ -14,21 +12,25 @@ jobs:
         with:
           branch: 'release-${{ github.ref_name }}'
 
-  run_tests:
+  run-tests:
+    name: Run Tests
     needs: create-release-branch
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run tests
-        run: npm run test-ci
-
-  build:
-    name: Create Release
-    needs: run_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Run tests
+        uses: ./path/to/run-tests.yml
+
+  build:
+    name: Create Release
+    needs: run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
