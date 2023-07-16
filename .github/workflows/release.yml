@@ -2,11 +2,9 @@ name: Create Release Branch and Run Tests
 
 on:
   push:
-    tags: v\d+
+    tags:
+      - v\d+
     workflow_dispatch:
-  permissions:
-    contents: read
-    issues: write
 
 jobs:
   create-release-branch:
@@ -16,7 +14,7 @@ jobs:
       - name: Create Release Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           branch: 'release-${{ github.ref_name }}'
 
@@ -39,7 +37,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: 'Release ${{ github.ref }}'
