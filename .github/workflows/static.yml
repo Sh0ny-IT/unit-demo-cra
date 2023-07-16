@@ -17,10 +17,7 @@ concurrency:
 
 jobs:
   build-job:
-    strategy:
-        node: 18
-        runs-on: ubuntu-latest
-
+    runs-on: ubuntu-latest
     steps:
       - name: Get the repo code
         uses: actions/checkout@v3
