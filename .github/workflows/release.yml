@@ -44,15 +44,17 @@ jobs:
           labels: release
           assignees: ${{ steps.parse_git_log.outputs.author }}
           body: ${{ steps.parse_git_log.outputs.body }}
+        id: create_issue  # <-- Added this to use outputs in the next step
       - name: Update info issue
         uses: peter-evans/create-or-update-comment@v3
         with:
-          issue-number: ${{ steps.create_issue.outputs.number }}
-          filename: .github/issue_template.md
-          update_existing: true
-          search_existing: all
+          token: ${{ secrets.GITHUB_TOKEN }}  # <-- Token to authenticate the action
+          repository: ${{ github.repository }}  # <-- The owner and repo in 'owner/repo' format
+          issue-number: ${{ steps.create_issue.outputs.number }}  # <-- The issue number to update
+          body: >  # <-- The content of the comment
+            This issue was created automatically.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
-      issue_number: ${{ steps.create-release-issue.outputs.number }}
-      issue_url: ${{ steps.create-release-issue.outputs.url }}
+      issue_number: ${{ steps.create_issue.outputs.number }}  # <-- Updated this to reference the correct step
+      issue_url: ${{ steps.create_issue.outputs.url }}  # <-- Updated this to reference the correct step
