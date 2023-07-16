@@ -1,7 +1,6 @@
 ---
-title: Test Report for Release ${{ github.run_number }}
-assignees: ${{ github.actor }}
-labels: test, report
+title: '[{{ env.VERSION }}] Release'
+labels: RELEASE
+assignees: {{ env.GITHUB_ACTOR }}
 ---
 
-{{ test_report }}
