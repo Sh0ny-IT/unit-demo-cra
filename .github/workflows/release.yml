@@ -1,6 +1,12 @@
 name: Create Release Branch and Run Tests
 
-on: [workflow_dispatch, push]
+on:
+  push:
+    tags: v\d+
+    workflow_dispatch:
+  permissions:
+    contents: read
+    issues: write
 
 jobs:
   create-release-branch:
