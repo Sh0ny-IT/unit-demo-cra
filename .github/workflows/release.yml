@@ -54,16 +54,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download test report
-        uses: actions/download-artifact@v3
-        with:
-          name: test-report
-          path: shared-results
-
       - name: Prepare issue content
         run: |
-          TEST_REPORT_CONTENT=$(cat shared-results/test-report.html)
-          sed -i "s|{{ test_report }}|$TEST_REPORT_CONTENT|" .github/issue_template.md
+          echo "Test report is available as an artifact in this workflow run." > test_report_link.txt
 
       - name: Create or update release issue
         id: create-release-issue
@@ -87,6 +80,7 @@ jobs:
         with:
           name: issue_id
           path: issue_id.txt
+
 
   create-release-tag:
     needs: run-tests
