@@ -47,6 +47,7 @@ jobs:
       - name: Update info issue
         uses: peter-evans/create-or-update-comment@v3
         with:
+          issue-number: ${{ steps.create_issue.outputs.number }}
           filename: .github/issue_template.md
           update_existing: true
           search_existing: all
