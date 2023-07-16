@@ -1,17 +1,17 @@
 ---
-title: {{ env.GITHUB_REF_NAME }}: {{ env.GITHUB_ACTOR }}: {{ env.TIME_OF_CHANGES }}
+title: {{ env.GITHUB_REF_NAME }}
 assignees: {{ env.GITHUB_ACTOR }}
 labels: release
 ---
 
-## Версия проекта, связанная с этой задачей
+## Version
 {{ env.GITHUB_REF_NAME }}
 
-## Время изменений
+## time of changes
 {{ env.TIME_OF_CHANGES }}
 
-## Тесты
+## test report
 {{ env.TEST_REPORT }}
 
-## Автор
+## author
 {{ env.GITHUB_ACTOR }}
